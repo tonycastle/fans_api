@@ -1,7 +1,6 @@
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
-
-//TODO: missing the stripe import - seems to be a problem if I import it here and in the payment controller - need to investigate
+import stripe from "../Services/Stripe.js";
 
 //create a Stripe Customer Id.  Helper function not a route definition.
 const createCustomer = async (req, res) => {

@@ -1,9 +1,5 @@
 import User from "../models/User.js";
-import Stripe from "stripe";
-
-const stripe = new Stripe(
-  "sk_test_51JWsLSBhgw4Dhe1cWPDvWBARx0FaPSZTYGvXJHfMKwSslA96HcPAGeYeZRlc6jsWy3QOI4c6flEJLGyNhTqMK0Ml00TB32toKn"
-);
+import stripe from "../Services/Stripe.js";
 
 export const addCard = async (req, res) => {
   try {
@@ -13,6 +9,20 @@ export const addCard = async (req, res) => {
     });
     console.log(intent);
     res.status(200).json({ client_secret: intent.client_secret });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send(error);
+  }
+};
+
+export const listCards = async (req, res) => {
+  try {
+    const paymentMethods = await stripe.paymentMethods.list({
+      customer: "cus_KBTthOP6OzIDTt",
+      type: "card",
+    });
+    res.status(200).json(paymentMethods.data);
+    console.log("success");
   } catch (error) {
     console.log(error);
     res.status(400).send(error);
