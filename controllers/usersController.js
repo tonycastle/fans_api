@@ -15,6 +15,18 @@ const createCustomer = async (email) => {
 
 //creates a new user when user registers on the website - need to add data validation in here at some point
 export const register = async (req, res) => {
+  //see if the email is taken already, if it is get out and return failure.
+  try {
+    const userCheck = await User.findOne({ email: req.body.email }).exec();
+    console.log(`userCheck: ${userCheck}`);
+    if (userCheck) {
+      res.status(200).json({ success: false, message: "Email is taken" });
+      return;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+  console.log("still in the register ffunction");
   //get new Stripe Customer Id
   const customerId = await createCustomer({
     email: req.body.email,
@@ -37,9 +49,10 @@ export const register = async (req, res) => {
 
     const newUser = new User(userConfig);
     const user = await newUser.save();
+    console.log(user);
     res.status(200).json(user);
   } catch (error) {
-    res.status(200).send(error);
+    res.status(400).send(error);
   }
 };
 
