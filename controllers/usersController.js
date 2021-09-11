@@ -82,12 +82,23 @@ export const login = async (req, res) => {
 };
 
 //get a users details for profile page - should not send anything sensitive here eg stripe number etc.
-export const getUser = async (req, res) => {
+export const getOtherProfile = async (req, res) => {
   try {
     const user = await User.findOne(
       { _id: req.body.id },
       "display_name bio followers subscription_fee profilePicture coverPicture"
     ).exec();
+    res.status(200).json({ success: true, user });
+  } catch (error) {
+    console.log(error);
+    res.status(200).json({ success: false, message: error });
+  }
+};
+
+//get a users own details for profile page
+export const getProfile = async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.body.id }).exec();
     res.status(200).json({ success: true, user });
   } catch (error) {
     console.log(error);
@@ -106,7 +117,10 @@ export const verify = async (req, res) => {
 
 export const editProfile = async (req, res) => {
   try {
-    console.log(req.body);
+    const { _id, ...data } = req.body;
+    const result = await User.updateOne({ _id: _id }, data);
+
+    console.log(`matched: ${result.n}, modified: ${result.nModified}`);
     res.status(200).json({ success: true });
   } catch (error) {
     console.log(error);
