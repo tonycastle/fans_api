@@ -18,7 +18,6 @@ export const register = async (req, res) => {
   //see if the email is taken already, if it is get out and return failure.
   try {
     const userCheck = await User.findOne({ email: req.body.email }).exec();
-    console.log(`userCheck: ${userCheck}`);
     if (userCheck) {
       res.status(200).json({ success: false, message: "Email is taken" });
       return;
@@ -26,7 +25,7 @@ export const register = async (req, res) => {
   } catch (error) {
     console.log(error);
   }
-  console.log("still in the register ffunction");
+
   //get new Stripe Customer Id
   const customerId = await createCustomer({
     email: req.body.email,
@@ -38,7 +37,7 @@ export const register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
     const userConfig = {
-      username: req.body.username,
+      display_name: req.body.username,
       password: hashedPassword,
       email: req.body.email,
     };
@@ -50,9 +49,9 @@ export const register = async (req, res) => {
     const newUser = new User(userConfig);
     const user = await newUser.save();
     console.log(user);
-    res.status(200).json(user);
+    res.status(200).json({ success: true, user });
   } catch (error) {
-    res.status(400).send(error);
+    res.status(200).send({ success: false, error });
   }
 };
 
@@ -75,12 +74,25 @@ export const login = async (req, res) => {
       // TODO: Send JWT
       res.status(200).json({ success: true, message: "passwords match" });
     } else {
-      console.log(`response: ${response}`);
       res
         .status(200)
         .json({ success: false, message: "Incorrect Credentials" });
     }
   });
+};
+
+//get a users details for profile page - should not send anything sensitive here eg stripe number etc.
+export const getUser = async (req, res) => {
+  try {
+    const user = await User.findOne(
+      { _id: req.body.id },
+      "display_name bio followers subscription_fee profilePicture coverPicture"
+    ).exec();
+    res.status(200).json({ success: true, user });
+  } catch (error) {
+    console.log(error);
+    res.status(200).json({ success: false, message: error });
+  }
 };
 
 //sets the verified status af a user to true after they have verified their identity
@@ -89,5 +101,14 @@ export const verify = async (req, res) => {
   try {
   } catch (error) {
     res.status(200).send(error);
+  }
+};
+
+export const editProfile = async (req, res) => {
+  try {
+    console.log(req.body);
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.log(error);
   }
 };

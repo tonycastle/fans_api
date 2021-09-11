@@ -9,7 +9,7 @@ const postSchema = new Mongoose.Schema({
     type: String,
   },
   owner_id: {
-    type: Number,
+    type: String,
     required: true,
   },
   owner_username: {

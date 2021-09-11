@@ -2,10 +2,19 @@ import Mongoose from "mongoose";
 
 const userSchema = new Mongoose.Schema({
   username: {
+    type: String, //this is your user handle, must be unique
+    min: 5,
+    unique: true,
+  },
+  display_name: {
+    //this is just the name displayed
     type: String,
     required: true,
     min: 5,
-    unique: true,
+  },
+  bio: {
+    type: String,
+    default: "",
   },
   email: {
     type: String,
@@ -17,7 +26,6 @@ const userSchema = new Mongoose.Schema({
     type: String,
     min: 6,
     required: true,
-    unique: true,
   },
   verified: {
     type: Boolean,
@@ -42,9 +50,28 @@ const userSchema = new Mongoose.Schema({
   currency: {
     type: String,
   },
+  subscription_fee: {
+    type: Number,
+    default: 0,
+  },
   stripe_customer_id: {
     type: String,
     default: "",
+  },
+  location: {
+    //users location
+    type: String,
+    deault: "",
+  },
+  website: {
+    //website url
+    type: String,
+    deault: "",
+  },
+  amazon: {
+    //amazon wishlist link
+    type: String,
+    deault: "",
   },
 });
 

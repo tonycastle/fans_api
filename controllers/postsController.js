@@ -31,10 +31,10 @@ export const getPost = async (req, res) => {
 
 export const getAllPosts = async (req, res) => {
   try {
-    const allPosts = await Post.find(); //we wnat to pass the userid here so that we just get our logged in users posts
-    res.status(200).json(allPosts);
+    const allPosts = await Post.find({ owner_id: req.body.id }).exec();
+    res.status(200).json({ success: true, allPosts });
   } catch (error) {
-    res.status(400).send(error);
+    res.status(200).send({ success: false, message: error });
   }
 };
 
@@ -62,12 +62,14 @@ export const uploadPostFile = (req, res) => {
 
   const file = req.files.file;
 
-  const path = "../client/src/uploads/" + uuidv4() + file.name;
+  const folder = "../client/public/images/";
+  const fileName = uuidv4() + file.name;
+  const path = folder + fileName;
 
   file.mv(path, (err) => {
     if (err) {
       return res.status(500).send(err);
     }
-    return res.send({ status: "success", path: path });
+    return res.send({ status: "success", path: fileName });
   });
 };
