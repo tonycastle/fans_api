@@ -1,11 +1,16 @@
-import express from "express";
-import * as Posts from "../controllers/postsController.js";
+const express = require("express");
+const {
+  createPost,
+  uploadPostFile,
+  getPost,
+  getAllPosts,
+} = require("../controllers/postsController.js");
 
 const router = express.Router();
 
-router.post("/create", Posts.createPost); //create new post
-router.post("/uploadPostFile", Posts.uploadPostFile); //upload media for a post
-router.get("/post", Posts.getPost); //get post based on received post id
-router.post("/allposts", Posts.getAllPosts); //all posts from one user
+router.post("/create", createPost); //create new post
+router.post("/uploadPostFile", uploadPostFile); //upload media for a post
+router.get("/post", getPost); //get post based on received post id
+router.post("/allposts", getAllPosts); //all posts from one user
 
-export default router;
+exports.router = router;

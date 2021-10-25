@@ -1,6 +1,11 @@
-import Mongoose from "mongoose";
+const Mongoose = require("mongoose");
 
 const userSchema = new Mongoose.Schema({
+  schema_id: {
+    //this gives us a way of migrating our data if we update schema.
+    type: Number,
+    default: 1,
+  },
   username: {
     type: String, //this is your user handle, must be unique
     min: 5,
@@ -39,13 +44,13 @@ const userSchema = new Mongoose.Schema({
     type: String,
     default: "",
   },
-  followers: {
-    type: Array,
-    default: [],
+  subscriber_count: {
+    type: Number,
+    default: 0,
   },
-  following: {
-    type: Array,
-    default: [],
+  following_count: {
+    type: Number,
+    deafult: 0,
   },
   currency: {
     type: String,
@@ -73,7 +78,14 @@ const userSchema = new Mongoose.Schema({
     type: String,
     deault: "",
   },
+  post_count: {
+    type: Number,
+    default: 0,
+  },
+  message_count: {
+    type: Number,
+    default: 0,
+  },
 });
 
-const user = Mongoose.model("User", userSchema);
-export default user;
+module.exports = Mongoose.model("User", userSchema);

@@ -1,10 +1,16 @@
-import express from "express";
-import Mongoose from "mongoose";
-import cors from "cors";
-import userRoutes from "./routes/userRoutes.js";
-import postRoutes from "./routes/postRoutes.js";
-import paymentRoutes from "./routes/paymentRoutes.js";
-import fileUpload from "express-fileupload";
+const express = require("express");
+const Mongoose = require("mongoose");
+const cors = require("cors");
+const userRoutes = require("./routes/userRoutes.js").router;
+const postRoutes = require("./routes/postRoutes.js").router;
+const paymentRoutes = require("./routes/paymentRoutes.js").router;
+const fileUpload = require("express-fileupload");
+const passport = require("passport");
+const localStrategy = require("passport-local").Strategy;
+const dotenv = require("dotenv");
+const session = require("express-session");
+
+dotenv.config();
 
 const app = express();
 
@@ -18,9 +24,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/payments", paymentRoutes);
 
-const URL_CONNECTION =
-  "mongodb://localhost:27017/realfans?retrywrites=true&=majority";
-
+const URL_CONNECTION = process.env.URL_CONNECTION;
 const PORT = process.env.PORT || 8800;
 
 Mongoose.connect(URL_CONNECTION, {
@@ -33,3 +37,4 @@ Mongoose.connect(URL_CONNECTION, {
   .catch((error) => console.log(error.message));
 
 Mongoose.set("useFindAndModify", false);
+//passport.use(new localStrategy());

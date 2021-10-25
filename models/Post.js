@@ -1,10 +1,11 @@
-import Mongoose from "mongoose";
-import Float from "mongoose-float";
-
-//set the decimal places to 2 for money
-Float.loadType(Mongoose, 2);
+const Mongoose = require("mongoose");
 
 const postSchema = new Mongoose.Schema({
+  schema_id: {
+    //this gives us a way of migrating our data if we update schema.
+    type: Number,
+    default: 1,
+  },
   post_text: {
     type: String,
   },
@@ -21,15 +22,12 @@ const postSchema = new Mongoose.Schema({
     default: Date.now,
   },
   post_access: {
-    /* can be free or paid - might not need this, possibly we can just check the price - if it is 00.00 then it's free
-     alternatively we may still need this if we have a situation where creator offers subscription but has some premium 
-     content that even subscribers need to pay for.
-     */
+    //can be 'free', 'subscriber' or PPV
     type: String,
     default: "free",
   },
   post_price: {
-    type: Float,
+    type: Number,
     default: 0,
   },
   likes: {
@@ -54,5 +52,4 @@ const postSchema = new Mongoose.Schema({
   },
 });
 
-const post = Mongoose.model("Post", postSchema);
-export default post;
+module.exports = Mongoose.model("Post", postSchema);

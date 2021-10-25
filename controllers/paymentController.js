@@ -1,7 +1,7 @@
-import User from "../models/User.js";
-import stripe from "../Services/Stripe.js";
+const User = require("../models/User.js");
+const stripe = require("../Services/Stripe.js");
 
-export const addCard = async (req, res) => {
+exports.addCard = async (req, res) => {
   try {
     const intent = await stripe.setupIntents.create({
       //for testing we are hard wiring this in but in future we should pull this straight from the user db model.
@@ -15,7 +15,7 @@ export const addCard = async (req, res) => {
   }
 };
 
-export const listCards = async (req, res) => {
+exports.listCards = async (req, res) => {
   try {
     const paymentMethods = await stripe.paymentMethods.list({
       customer: "cus_KBTthOP6OzIDTt",

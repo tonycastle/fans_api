@@ -1,6 +1,6 @@
-import User from "../models/User.js";
-import bcrypt from "bcrypt";
-import stripe from "../Services/Stripe.js";
+const User = require("../models/User.js");
+const bcrypt = require("bcrypt");
+const stripe = require("../Services/Stripe.js");
 
 //create a Stripe Customer Id.  Helper function not a route definition.
 const createCustomer = async (email) => {
@@ -14,7 +14,7 @@ const createCustomer = async (email) => {
 };
 
 //creates a new user when user registers on the website - need to add data validation in here at some point
-export const register = async (req, res) => {
+exports.register = async (req, res) => {
   //see if the email is taken already, if it is get out and return failure.
   try {
     const userCheck = await User.findOne({ email: req.body.email }).exec();
@@ -56,7 +56,7 @@ export const register = async (req, res) => {
 };
 
 //login a user
-export const login = async (req, res) => {
+exports.login = async (req, res) => {
   //first find user based on email
   const user = await User.findOne({ email: req.body.email }).exec();
   //if no user found we already failed login.
@@ -82,7 +82,7 @@ export const login = async (req, res) => {
 };
 
 //get a users details for profile page - should not send anything sensitive here eg stripe number etc.
-export const getOtherProfile = async (req, res) => {
+exports.getOtherProfile = async (req, res) => {
   try {
     const user = await User.findOne(
       { _id: req.body.id },
@@ -96,7 +96,7 @@ export const getOtherProfile = async (req, res) => {
 };
 
 //get a users own details for profile page
-export const getProfile = async (req, res) => {
+exports.getProfile = async (req, res) => {
   try {
     const user = await User.findOne({ _id: req.body.id }).exec();
     res.status(200).json({ success: true, user });
@@ -108,14 +108,14 @@ export const getProfile = async (req, res) => {
 
 //sets the verified status af a user to true after they have verified their identity
 //this is if they want to post - ie be a content creator.
-export const verify = async (req, res) => {
+exports.verify = async (req, res) => {
   try {
   } catch (error) {
     res.status(200).send(error);
   }
 };
 
-export const editProfile = async (req, res) => {
+exports.editProfile = async (req, res) => {
   try {
     const { _id, ...data } = req.body;
     const result = await User.updateOne({ _id: _id }, data);
@@ -123,6 +123,18 @@ export const editProfile = async (req, res) => {
     console.log(`matched: ${result.n}, modified: ${result.nModified}`);
     res.status(200).json({ success: true });
   } catch (error) {
+    console.log(error);
+  }
+};
+
+//this is used in the edit profile form to validate before form submission.
+exports.checkUsername = async (req, res) => {
+  try {
+    const result = await User.findOne({ username: req.body.username }).exec();
+    console.log(result);
+    !result && res.status(200).json({ success: true });
+  } catch (error) {
+    res.status(200).json({ success: false, error });
     console.log(error);
   }
 };
