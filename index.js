@@ -6,7 +6,6 @@ const postRoutes = require("./routes/postRoutes.js").router;
 const paymentRoutes = require("./routes/paymentRoutes.js").router;
 const fileUpload = require("express-fileupload");
 const passport = require("passport");
-const localStrategy = require("passport-local").Strategy;
 const dotenv = require("dotenv");
 const session = require("express-session");
 
@@ -37,4 +36,17 @@ Mongoose.connect(URL_CONNECTION, {
   .catch((error) => console.log(error.message));
 
 Mongoose.set("useFindAndModify", false);
-//passport.use(new localStrategy());
+
+//Passport Middleware (authentication)
+app.use(passport.initialize());
+//Passport Config
+require("./config/passport.js")(passport);
+
+app.get(
+  "/api/test",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    console.log(req);
+    res.status(200).send({ hello: "hello" });
+  }
+);

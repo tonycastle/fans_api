@@ -1,6 +1,7 @@
 const User = require("../models/User.js");
 const bcrypt = require("bcrypt");
 const stripe = require("../Services/Stripe.js");
+const jwt = require("jsonwebtoken");
 
 //create a Stripe Customer Id.  Helper function not a route definition.
 const createCustomer = async (email) => {
@@ -71,8 +72,25 @@ exports.login = async (req, res) => {
     }
 
     if (response) {
-      // TODO: Send JWT
-      res.status(200).json({ success: true, message: "passwords match" });
+      const payload = {
+        username: user.username,
+        displayname: user.displayname,
+      };
+      console.log(process.env.JWT_SECRET);
+      jwt.sign(
+        payload,
+        process.env.JWT_SECRET,
+        {
+          expiresIn: process.env.JWT_EXPIRATION,
+        },
+        (err, token) => {
+          res.status(200).json({
+            success: true,
+            token: `JWT ${token}`,
+            message: "passwords match",
+          });
+        }
+      );
     } else {
       res
         .status(200)
