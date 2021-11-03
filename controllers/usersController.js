@@ -73,10 +73,8 @@ exports.login = async (req, res) => {
 
     if (response) {
       const payload = {
-        username: user.username,
-        displayname: user.displayname,
+        id: user._id,
       };
-      console.log(process.env.JWT_SECRET);
       jwt.sign(
         payload,
         process.env.JWT_SECRET,
@@ -100,6 +98,7 @@ exports.login = async (req, res) => {
 };
 
 //get a users details for profile page - should not send anything sensitive here eg stripe number etc.
+// This is not a users own profile page.
 exports.getOtherProfile = async (req, res) => {
   try {
     const user = await User.findOne(
