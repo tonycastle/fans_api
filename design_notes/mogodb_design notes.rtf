@@ -1,0 +1,19 @@
+Metrics 
+    PostViews 
+        - data about each post view - this is an unbound array of infinnite size therefore each page view has it's own document that references 
+          the post with a post_id. Therefore millions of documents rather than a document with millions of entries.
+    ProfileViews
+        - same as above except each profile view document references a profile with a profile id. (reverse lookup) Also means we don't have to search
+        this data when we are just displaying a post/profile. We query it separately in the dash board when required.  We will however keep a single total in the actual
+        post document as we want to show total views to the viewers.
+
+Entities
+    Users
+        A single profile of a user. will also contain a posts array containing references to posts. will also contain an array with a reference to followers, willl also contain a reference array of subscribers.
+        will have a total subscriber field, a total follower field and a post count field also.
+    Posts
+        A single post per document - will have a like count, array of which users have liked the post so that the like button is displayed in the correct state when the post is visited. 
+    Comments
+        Probably implemented as a document per post with the entire conversation in a single document. Need to look into this though - not vital either as this is not needed for v1. 
+    Subscriptions
+        

@@ -1,9 +1,14 @@
 const express = require("express");
-const { addCard, listCards } = require("../controllers/paymentController.js");
+const {
+  addCard,
+  listCards,
+  deleteCard,
+} = require("../controllers/paymentController.js");
 
 const router = express.Router();
 
-router.get("/addcard", addCard);
-router.get("/listcards", listCards);
+router.post("/addcard", addCard);
+router.post("/listcards", listCards);
+router.post("/deletecard", deleteCard);
 
 exports.router = router;

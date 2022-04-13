@@ -1,23 +1,14 @@
 const Post = require("../models/Post.js");
 const User = require("../models/User.js");
-const uuidv4 = require("uuid");
+const { v4: uuidv4 } = require("uuid");
+const path = require("path");
 
 //creates a new user when user registers on the website - need to add data validation in here at some point
 //TODO: get the user id = require(the logged in session
 exports.createPost = async (req, res) => {
   try {
     const { ...data } = req.body;
-    data.owner_id = 123456789;
-    data.owner_username = "Tony77";
-
-    /* {
-      
-      post_text: req.body.post_text,
-      post_price: 
-      post_access:
-      files: req.body.files,
-    } */
-
+    //console.log(data.files);
     //create new user
     const newPost = new Post(data);
 
@@ -29,20 +20,36 @@ exports.createPost = async (req, res) => {
   }
 };
 
-//gets a specific post GET request, expects post id
+//gets a specific post and increments view count expects post id
 exports.getPost = async (req, res) => {
   try {
+    const post = await Post.findOneAndUpdate(
+      { _id: req.body.id },
+      { $inc: { views: 1 } },
+      { new: true }
+    ).exec();
+    res.status(200).send(post);
   } catch (error) {
-    res.status(400).send(error);
+    res.status(500).send(error);
   }
 };
 
-exports.getAllPosts = async (req, res) => {
+//different to getPost as this does not increment post views
+exports.getOwnPost = async (req, res) => {
+  try {
+    const post = await Post.findOne({ _id: req.body.id }).exec();
+    res.status(200).send(post);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+exports.getAllPostsFromUser = async (req, res) => {
   try {
     const allPosts = await Post.find({ owner_id: req.body.id }).exec();
-    res.status(200).json({ success: true, allPosts });
+    res.status(200).json(allPosts);
   } catch (error) {
-    res.status(200).send({ success: false, message: error });
+    res.status(500).send({ message: error });
   }
 };
 
@@ -54,7 +61,13 @@ exports.editPost = async (req, res) => {
 };
 
 exports.deletePost = async (req, res) => {
+  console.log(req.body.id);
   try {
+    //TODO: delete any media associated with this post before we delete it
+    //if something goes wrong with image deletion we need to know, but the user doesn't care
+    //maybe we can just record the file details to another system that does bulk deletions
+    await Post.deleteOne({ _id: req.body.id }).exec();
+    res.status(200).send({ message: "sucessfully deleted" });
   } catch (error) {
     res.status(400).send(error);
   }
@@ -71,14 +84,14 @@ exports.uploadPostFile = (req, res) => {
 
   const file = req.files.file;
 
-  const folder = "../client/public/images/";
-  const fileName = uuidv4() + file.name;
-  const path = folder + fileName;
+  const folder = path.join("..", "client", "public", "images");
+  const name = uuidv4() + file.name;
+  const filePath = path.join(folder, name);
 
-  file.mv(path, (err) => {
+  file.mv(filePath, (err) => {
     if (err) {
       return res.status(500).send(err);
     }
-    return res.send({ status: "success", path: fileName });
+    return res.send({ status: "success", path: name });
   });
 };

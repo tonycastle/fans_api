@@ -23,6 +23,9 @@ const postSchema = new Mongoose.Schema({
   },
   post_access: {
     //can be 'free', 'subscriber' or PPV
+    //free: anyone can view
+    //subscriber: profile subscribers can view
+    //ppv: only those in the post.subscriber field below can view
     type: String,
     default: "free",
   },
@@ -46,9 +49,13 @@ const postSchema = new Mongoose.Schema({
     default: [],
   },
   subscribers: {
-    // an array of subscribers allowed to see this - ie those who have paid. This will be user id's.
+    // an array of subscribers allowed to see this - ie those who have paid. This is only used when the post type is PPV.
     type: Array,
     default: [],
+  },
+  views: {
+    type: Number,
+    default: 0,
   },
 });
 

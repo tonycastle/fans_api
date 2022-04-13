@@ -1,6 +1,8 @@
 const User = require("../models/User.js");
 const bcrypt = require("bcrypt");
-const stripe = require("../Services/Stripe.js");
+const stripe = require("stripe")(
+  "sk_test_51JWsLSBhgw4Dhe1cWPDvWBARx0FaPSZTYGvXJHfMKwSslA96HcPAGeYeZRlc6jsWy3QOI4c6flEJLGyNhTqMK0Ml00TB32toKn"
+);
 const jwt = require("jsonwebtoken");
 
 //create a Stripe Customer Id.  Helper function not a route definition.
@@ -85,7 +87,7 @@ exports.login = async (req, res) => {
           res.status(200).json({
             success: true,
             token: `JWT ${token}`,
-            message: "passwords match",
+            user: user,
           });
         }
       );
@@ -101,14 +103,15 @@ exports.login = async (req, res) => {
 // This is not a users own profile page.
 exports.getOtherProfile = async (req, res) => {
   try {
+    console.log(req.body);
     const user = await User.findOne(
       { _id: req.body.id },
       "display_name bio followers subscription_fee profilePicture coverPicture"
     ).exec();
-    res.status(200).json({ success: true, user });
+    res.status(200).json(user);
   } catch (error) {
     console.log(error);
-    res.status(200).json({ success: false, message: error });
+    res.status(500).json({ message: error });
   }
 };
 
@@ -116,10 +119,10 @@ exports.getOtherProfile = async (req, res) => {
 exports.getProfile = async (req, res) => {
   try {
     const user = await User.findOne({ _id: req.body.id }).exec();
-    res.status(200).json({ success: true, user });
+    res.status(200).json(user);
   } catch (error) {
     console.log(error);
-    res.status(200).json({ success: false, message: error });
+    res.status(500).json({ message: error });
   }
 };
 
@@ -135,6 +138,7 @@ exports.verify = async (req, res) => {
 exports.editProfile = async (req, res) => {
   try {
     const { _id, ...data } = req.body;
+    console.log(req.body);
     const result = await User.updateOne({ _id: _id }, data);
 
     console.log(`matched: ${result.n}, modified: ${result.nModified}`);

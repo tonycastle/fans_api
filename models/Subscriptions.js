@@ -35,6 +35,10 @@ const subscriptionSchema = new Mongoose.Schema({
     type: String,
     default: "",
   },
+  end_date: {
+    //the period when the current subscription ends - for recurring subs this will be updated when we receive payment details from Stripe.
+    type: Date,
+  },
   payments: {
     //array of completed and outstanding payments for this subscription
     type: Array,
